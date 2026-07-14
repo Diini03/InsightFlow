@@ -1,0 +1,11 @@
+# InsightFlow
+
+> Business intelligence made simple. Upload CSV or Excel and instantly uncover trends, KPIs, and actionable insights.
+
+InsightFlow is a modern SaaS BI platform for data analysts, operators, and founders. Upload business data, get automated dataset profiling, AI-generated executive summaries, KPI dashboards, and shareable reports.
+
+## Pages
+
+- [Home](/): Landing page with features, pricing, and testimonials
+- [Sign in](/login): User sign in
+- [Sign up](/register): Create a free account

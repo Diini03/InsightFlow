@@ -1,30 +1,4 @@
-
-User-agent: Googlebot
-Allow: /
-Disallow: /admin/
-Disallow: /login/
-Disallow: /draft/
-Disallow: /private/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /admin/
-Disallow: /login/
-Disallow: /draft/
-Disallow: /private/
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /login/
-Disallow: /draft/
-Disallow: /private/
 
-# Sitemap location
-Sitemap: https://leadmamut.com/sitemap.xml
+Sitemap: /sitemap.xml
