@@ -1,96 +1,88 @@
+# InsightFlow — Production Polish Pass
 
-# InsightFlow — Phase 1 Build Plan
+Systematic audit + refinement across the existing app. No new features; every change raises fit, finish, and consistency to commercial BI quality.
 
-Replaces the existing Mamut marketing site with a production-quality BI SaaS foundation. Analytics, Reports, Visualizations, AI Insights (full), Dashboards builder, and Command Palette are staged for Phase 2 so Phase 1 stays shippable and polished.
+## 1. Brand mark (replace wordmark logo)
 
-## Stack (adapted to Lovable)
+- Design a custom SVG logo mark: stacked ascending bars fused with a flowing line node (analytics pulse). Two-tone using `--primary` + `--primary-hover`, works on light/dark.
+- New `src/components/common/Logo.tsx` (accepts `size`, `withWordmark`).
+- Use icon-only in sidebar header + top nav. Use full lockup on Landing, Login, Register, 404, browser title/favicon.
+- Update `index.html` title/description, replace `public/favicon.ico` with SVG favicon.
 
-- Frontend: React + TypeScript + Vite + TailwindCSS + shadcn/ui + TanStack Query + TanStack Table + Framer Motion + Recharts, Inter font
-- Backend: **Lovable Cloud** (Postgres + Auth + Storage + Edge Functions in TypeScript/Deno) — replaces the FastAPI/SQLite stack from the brief
-- CSV/Excel parsing: PapaParse + SheetJS (client-side, streamed for large files)
-- AI Insights: Lovable AI Gateway (`google/gemini-3-flash-preview`)
-- JWT: handled by Cloud auth (Supabase GoTrue) — no custom JWT layer
+## 2. Design system hardening (`index.css`, `tailwind.config.ts`)
 
-## Phase 1 scope (this build)
+- Introduce spacing scale doc + shadow tokens: `--shadow-xs/sm/md/lg/xl` (currently only 3). Standardize radii: card=`--radius-lg` (14px), control=`--radius-md` (10px), chip=`--radius-sm` (6px).
+- Add semantic chart palette tokens (`--chart-1..8`) and success/warning/info soft variants used by KPI states.
+- Type ramp utilities: `text-display`, `text-h1..h4`, `text-body`, `text-caption`, `text-overline` mapped in Tailwind. Enforce tabular-nums on metrics.
+- Motion tokens: `--ease-out`, `--duration-fast/base`, unify Framer + CSS transitions.
 
-1. **Cleanup** — delete all Mamut pages/components (`Hero`, `Services`, `About`, `FAQ`, `ROICalculator`, `Contact`, `Chatbot`, `CookieBanner`, `SeriesATimeTrap`, `Testimonials`, `Header`, `Footer`, `SocialShare`, `FloatingContactButton`, and every file under `src/components/blog`, `src/components/case-studies`, `src/components/onepagers`, `src/pages/blog`, `src/pages/case-studies`, `src/pages/onepagers`, plus `CaptainComplianceCaseStudy`, `IntegrationGuide`, `OnePager`, `PrivacyPolicy`, `Blog`). Rewrite `App.tsx`, `index.css`, `tailwind.config.ts`, `index.html`, `public/sitemap.xml`, `public/robots.txt`, `public/llms.txt` for InsightFlow.
+## 3. AppShell + navigation
 
-2. **Design system** — Inter font, 16px radius, `--primary` `#2563EB`, `--secondary` `#0F172A`, `--background` `#F8FAFC`, semantic tokens for card/border/muted/success/warning/destructive, full dark mode, elevation shadows, skeleton shimmer, `tailwindcss-animate` transitions.
+- Sidebar: grouped sections (Overview / Data / Analyze / Configure), section labels, icon alignment fixed, active state uses left indicator + soft bg, collapsed mode shows tooltips (already partly wired — verify), min tap target 40px.
+- Topbar: constrain height, search shrinks on mobile to icon-trigger, keyboard shortcut hint `⌘K`, sticky with subtle border/backdrop only when scrolled.
+- Mobile: sidebar becomes offcanvas sheet; hamburger visible.
+- Add breadcrumbs slot below topbar for nested routes (Datasets / [name]).
 
-3. **Landing page** (`/`)
-   - Sticky nav, hero ("Business intelligence made simple." + CTAs "Start Free" / "View Demo")
-   - Features grid (Interactive dashboards, Advanced filtering, Report generation, Business insights, Forecasting)
-   - Animated dashboard preview mockup
-   - Testimonials, 3-tier pricing (Starter / Pro / Enterprise), FAQ accordion, footer
+## 4. Page-by-page audit + fixes
 
-4. **Auth** (`/login`, `/register`) — Cloud email+password + Google. Protected-route wrapper, session listener, redirect to `/dashboard`. **User profile table required** (name, avatar, plan) via trigger on `auth.users`.
+Each page gets: consistent `PageHeader`, container max-width, spacing rhythm (`space-y-6`), skeleton loaders, empty states, error boundaries.
 
-5. **App shell** — collapsible shadcn sidebar (Dashboard, Datasets, Analytics, Reports, Dashboards, Visualizations, Notifications, Settings), top bar with search input, notification bell, avatar menu, theme toggle. Phase-2 items render "Coming soon" empty states.
+- **Landing**: tighten hero grid, fix mobile stacking, unify CTA sizing, add feature icons with brand mark motifs.
+- **Login / Register**: same card scale, better field spacing, inline validation, disabled + loading button states, Google btn parity.
+- **Dashboard**: reorganize into 4 zones — KPI row (4 cards, not 10), Trends (area + bar in 2-col grid), Attention (insights + activity), Quick Actions. Add "What needs attention" callout card. KPI cards get sparkline slot.
+- **Datasets** list: TanStack Table polish — sticky header, sort, search, column visibility menu, row hover, pagination footer, filename truncation with tooltip, quality-score badge.
+- **DatasetNew** upload: animated dropzone states (idle / hover / uploading / success / error), progress bar, per-file validation messages, schema preview panel.
+- **DatasetDetails**: tabs (Overview / Schema / Preview / AI Insights), sticky action bar, fix table overflow with horizontal scroll container, AI summary loading skeleton.
+- **Notifications**: grouped by date, unread indicator, mark-all-read, empty state.
+- **Profile / Settings**: sectioned cards, form field grid, save bar with dirty-state detection.
+- **Analytics / Reports / Dashboards / Visualizations** (Phase 2 placeholders): upgrade `ComingSoonPage` to a richer teaser with feature checklist + waitlist CTA — feels intentional, not stub.
+- **NotFound**: brand-consistent, illustration, home CTA.
 
-6. **Main Dashboard** (`/dashboard`) — 10 KPI cards (Total Revenue, Total Profit, Orders, Customers, Growth %, AOV, Monthly Revenue, Top Product, Top Region, Sales Forecast) computed from the user's most recent dataset (or realistic seed data if none). Revenue trend line chart, category bar chart, Recent uploads, Recent reports, Quick actions. Skeleton loaders throughout.
+## 5. Charts (Recharts)
 
-7. **Datasets** (`/datasets`) — TanStack Table list (name, rows, columns, size, uploaded_at, quality score), search, delete, virtualized rows. Empty state with upload CTA.
+- Shared `ChartContainer` wrapper: responsive, aspect-ratio locked, header (title + actions), legend row, tooltip theme, empty + loading states.
+- Use palette tokens; add gridline muted color; format axis with `nFormatter`; tooltip uses card bg + border + shadow-md.
+- All charts wrapped in `ResponsiveContainer` with min-height so they don't collapse; overflow-hidden on parents.
 
-8. **Upload flow** (`/datasets/new`) — drag & drop CSV/Excel (react-dropzone), client-side parse via PapaParse/SheetJS, column + data-type detection (number/date/string/boolean), first-50-row preview table, validation errors, save to Cloud (metadata row in `datasets`, raw file in Storage bucket, parsed rows in `dataset_rows` as JSONB batches).
+## 6. Tables
 
-9. **Dataset Details** (`/datasets/:id`) — profile stats (rows, columns, missing %, duplicates, memory, quality score 0–100), per-column stats card (type, unique, nulls, min/max/mean/median for numeric, top values for categorical), preview table, **AI-generated executive summary** via edge function `generate-insights` calling Lovable AI Gateway.
+- Extract `DataTable` primitive (TanStack) with props for columns, data, search, pagination, empty, loading. Reused by Datasets and Dataset preview. Sticky header, `overflow-x-auto` wrapper, min-width on cells.
 
-10. **Notifications** (`/notifications`) — list from `notifications` table (dataset uploaded, insight ready). Bell shows unread count. Realtime subscription.
+## 7. Forms + inputs
 
-11. **Settings & Profile** (`/settings`, `/profile`) — update name/avatar (Cloud Storage), theme, sign out.
+- Standard `Field` wrapper: label, control, hint, error. Zod + react-hook-form on Login/Register/Profile. Consistent 40px control height, focus ring using `--ring`.
 
-12. **UX polish** — Framer Motion page transitions, skeleton loaders, toast notifications (sonner), empty states with illustrations, keyboard-friendly focus rings, ARIA labels.
+## 8. Micro-interactions
 
-## Database (Lovable Cloud migration)
+- Card hover: subtle `translate-y-[-1px]` + shadow-md → lg. Buttons: 150ms ease-out. Route transitions: fade-in on `<Outlet />`. Skeleton shimmer already exists — apply consistently.
 
-```text
-profiles(id uuid pk → auth.users, full_name, avatar_url, plan text default 'free', created_at)
-datasets(id uuid pk, user_id uuid, name, description, file_path, row_count, column_count,
-         columns jsonb, quality_score numeric, size_bytes, created_at)
-dataset_rows(id bigserial pk, dataset_id uuid, batch_index int, rows jsonb)
-reports(id uuid pk, user_id, dataset_id, title, config jsonb, created_at)   -- schema now, UI Phase 2
-dashboards(id uuid pk, user_id, name, layout jsonb, created_at)              -- schema now, UI Phase 2
-charts(id uuid pk, dashboard_id, chart_type, configuration jsonb)            -- schema now, UI Phase 2
-notifications(id uuid pk, user_id, type, title, body, read boolean, created_at)
-insights(id uuid pk, dataset_id, kind, content text, created_at)             -- AI summaries cache
-```
+## 9. Accessibility
 
-RLS on every table: owner-only via `auth.uid() = user_id` (and `dataset_rows`/`charts` join through parent). GRANTs to `authenticated` + `service_role`. Trigger `handle_new_user()` seeds `profiles`. Storage bucket `datasets` (private) with per-user path policies.
+- `aria-label` on every icon-only button (sidebar trigger, notification bell, theme toggle, avatar menu, chart action buttons).
+- Single `<main>` per route (already via AppShell — verify).
+- Focus-visible rings on all interactive elements.
+- `h-dvh` instead of `h-screen` where used.
+- Color contrast: audit muted-foreground on cards; bump if under 4.5:1.
 
-## Edge Functions
+## 10. Error + empty states
 
-- `generate-insights` — takes `dataset_id`, loads column stats + sample rows, calls Lovable AI Gateway (`google/gemini-3-flash-preview`) with a structured prompt, stores result in `insights`, inserts a `notifications` row. Uses the AI SDK gateway helper from `ai-sdk-lovable-gateway`.
+- Global `ErrorBoundary` around `<Outlet />` with friendly copy + retry.
+- Toast copy pass: replace raw supabase error strings with human messages (upload failed, network, auth).
+- Empty states: illustration + one-line reason + primary CTA on Datasets, Notifications, DatasetDetails preview.
 
-## Folder structure
+## 11. Performance
 
-```text
-src/
-  components/
-    ui/                    (shadcn)
-    layout/                (AppShell, Sidebar, Topbar)
-    landing/               (Hero, Features, Testimonials, Pricing, FAQ, Footer)
-    dashboard/             (KpiCard, RevenueChart, RecentUploads, QuickActions)
-    datasets/              (UploadDropzone, PreviewTable, ColumnStats, QualityScore)
-    common/                (Skeletons, EmptyState, PageHeader, ThemeToggle)
-  pages/
-    Landing.tsx, Login.tsx, Register.tsx,
-    Dashboard.tsx, Datasets.tsx, DatasetNew.tsx, DatasetDetails.tsx,
-    Analytics.tsx, Reports.tsx, Dashboards.tsx, Visualizations.tsx,
-    Notifications.tsx, Settings.tsx, Profile.tsx, NotFound.tsx
-  hooks/     (useAuth, useDatasets, useDataset, useProfile, useTheme)
-  services/  (datasets.ts, insights.ts, storage.ts)
-  lib/       (parse-csv.ts, parse-xlsx.ts, profile-dataset.ts, format.ts, utils.ts)
-  types/     (dataset.ts, api.ts)
-supabase/
-  migrations/<timestamp>_init.sql
-  functions/generate-insights/index.ts
-  functions/_shared/ai-gateway.ts
-```
+- Lazy-load route components with `React.lazy` + Suspense fallback = page skeleton.
+- Memoize KPI computations and chart data transforms.
+- Virtualize dataset preview table if row count > 200.
 
-## Explicitly deferred to Phase 2
+## Technical notes
 
-Full Analytics module (Pareto, RFM, YoY, cohorts), Report Builder + PDF/PNG export, drag-and-drop Dashboards builder, Visualization playground (heatmap/treemap/bubble/pivot), advanced filter system + saved filters, command palette, forecasting model, deep AI Insights (per-chart explainers, anomaly detection). Sidebar routes for these render polished "Coming soon" states so navigation stays complete.
+- No schema changes, no new routes, no feature scope changes.
+- All color values stay HSL tokens in `index.css`; no hardcoded hex/tw color utilities in components.
+- Preserve existing edge function + auth flow.
+- Keep bundle: don't add new heavy deps; reuse `lucide-react`, `recharts`, `@tanstack/react-table`, `framer-motion` already present.
 
-## Deliverable at end of Phase 1
+## Out of scope (Phase 2)
 
-Signed-in user can: land on marketing site → register → upload a CSV/Excel → see it profiled with AI-generated executive summary → view KPI dashboard driven by their data → manage profile/settings. Fully themed light/dark, responsive, accessible, with skeletons, empty states, and error handling throughout.
+Full Analytics module, Report builder, Dashboards builder, Visualization playground — remain polished "Coming soon" pages.
