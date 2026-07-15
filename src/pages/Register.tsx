@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { LogoLockup } from "@/components/common/Logo";
 import { toast } from "sonner";
 
 export default function Register() {
@@ -41,13 +42,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
+    <div className="min-h-dvh flex items-center justify-center bg-gradient-hero p-4">
       <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl justify-center mb-8">
-          <div className="h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
-          </div>
-          InsightFlow
+        <Link to="/" className="flex justify-center mb-8" aria-label="InsightFlow home">
+          <LogoLockup size={36} wordmarkClassName="text-xl" />
         </Link>
         <Card className="shadow-elevated border-2">
           <CardContent className="p-8">

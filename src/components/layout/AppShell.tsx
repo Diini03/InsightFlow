@@ -1,6 +1,10 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Database, BarChart3, FileText, LayoutGrid, PieChart, Bell, Settings as SettingsIcon, Sparkles, LogOut, User } from "lucide-react";
-import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
+import { LayoutDashboard, Database, BarChart3, FileText, LayoutGrid, PieChart, Bell, Settings as SettingsIcon, LogOut, User, Search, Command } from "lucide-react";
+import {
+  SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger,
+  SidebarHeader, useSidebar,
+} from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,57 +12,90 @@ import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { LogoMark } from "@/components/common/Logo";
 
-const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Datasets", url: "/datasets", icon: Database },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Reports", url: "/reports", icon: FileText },
-  { title: "Dashboards", url: "/dashboards", icon: LayoutGrid },
-  { title: "Visualizations", url: "/visualizations", icon: PieChart },
-  { title: "Notifications", url: "/notifications", icon: Bell },
-  { title: "Settings", url: "/settings", icon: SettingsIcon },
+const navGroups = [
+  {
+    label: "Overview",
+    items: [{ title: "Dashboard", url: "/dashboard", icon: LayoutDashboard }],
+  },
+  {
+    label: "Data",
+    items: [
+      { title: "Datasets", url: "/datasets", icon: Database },
+      { title: "Reports", url: "/reports", icon: FileText },
+    ],
+  },
+  {
+    label: "Analyze",
+    items: [
+      { title: "Analytics", url: "/analytics", icon: BarChart3 },
+      { title: "Dashboards", url: "/dashboards", icon: LayoutGrid },
+      { title: "Visualizations", url: "/visualizations", icon: PieChart },
+    ],
+  },
+  {
+    label: "Workspace",
+    items: [
+      { title: "Notifications", url: "/notifications", icon: Bell },
+      { title: "Settings", url: "/settings", icon: SettingsIcon },
+    ],
+  },
 ];
 
 function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className="border-b h-16 flex items-center px-4">
-        <NavLink to="/dashboard" className="flex items-center gap-2 font-bold text-lg">
-          <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0">
-            <Sparkles className="h-4 w-4 text-primary-foreground" />
-          </div>
-          {!collapsed && <span>InsightFlow</span>}
+        <NavLink to="/dashboard" className="flex items-center gap-2.5 font-semibold tracking-tight" aria-label="InsightFlow home">
+          <LogoMark size={32} />
+          {!collapsed && <span className="text-[15px]">InsightFlow</span>}
         </NavLink>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/dashboard"}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 rounded-md transition-colors ${
-                          isActive ? "bg-primary-soft text-primary font-medium" : "hover:bg-muted"
-                        }`
-                      }
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarContent className="py-2">
+        {navGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            {!collapsed && (
+              <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/80 font-medium px-3">
+                {group.label}
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === "/dashboard"}
+                        className={({ isActive }) =>
+                          `group relative flex items-center gap-3 rounded-md h-9 px-2.5 text-sm transition-colors ${
+                            isActive
+                              ? "bg-primary-soft text-primary font-medium"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            {isActive && !collapsed && (
+                              <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r-full bg-primary" aria-hidden />
+                            )}
+                            <item.icon className="h-[18px] w-[18px] shrink-0" />
+                            <span>{item.title}</span>
+                          </>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
@@ -76,21 +113,31 @@ export function AppShell() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-dvh flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b bg-background/80 backdrop-blur sticky top-0 z-30 flex items-center gap-3 px-4">
-            <SidebarTrigger />
-            <div className="relative flex-1 max-w-md">
+          <header className="h-16 border-b bg-background/85 backdrop-blur sticky top-0 z-30 flex items-center gap-3 px-4 md:px-6">
+            <SidebarTrigger aria-label="Toggle sidebar" />
+            <div className="relative flex-1 max-w-md hidden sm:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search datasets, reports…" className="pl-9 h-9 bg-muted/50 border-0" />
+              <Input
+                placeholder="Search datasets, reports…"
+                className="pl-9 pr-16 h-9 bg-muted/50 border-0 focus-visible:ring-1"
+                aria-label="Search"
+              />
+              <kbd className="hidden md:flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center gap-0.5 h-5 px-1.5 text-[10px] font-medium text-muted-foreground bg-background border rounded">
+                <Command className="h-3 w-3" />K
+              </kbd>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <Button variant="ghost" size="icon" className="sm:hidden" aria-label="Search">
+              <Search className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-1 ml-auto">
               <ThemeToggle />
               <NotificationBell />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full" aria-label="Account menu">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-gradient-primary text-primary-foreground text-sm font-medium">{initials}</AvatarFallback>
                     </Avatar>
@@ -116,7 +163,7 @@ export function AppShell() {
               </DropdownMenu>
             </div>
           </header>
-          <main className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
+          <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
             <Outlet />
           </main>
         </div>

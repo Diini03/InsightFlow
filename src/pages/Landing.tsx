@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { LogoMark, LogoLockup } from "@/components/common/Logo";
 
 const features = [
   { icon: LineChart, title: "Interactive Dashboards", desc: "Drag-and-drop dashboards that update in real time as your data changes." },
@@ -40,11 +41,8 @@ export default function Landing() {
       {/* Nav */}
       <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
-            </div>
-            InsightFlow
+          <Link to="/" className="flex items-center" aria-label="InsightFlow home">
+            <LogoLockup size={30} />
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition">Features</a>
@@ -256,11 +254,9 @@ export default function Landing() {
       <footer className="border-t py-12">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded bg-gradient-primary flex items-center justify-center">
-              <Sparkles className="h-3 w-3 text-primary-foreground" />
-            </div>
+            <LogoMark size={22} />
             <span className="font-semibold text-foreground">InsightFlow</span>
-            <span>· Business intelligence made simple.</span>
+            <span className="hidden sm:inline">· Business intelligence made simple.</span>
           </div>
           <div className="flex gap-6">
             <a href="#features" className="hover:text-foreground">Features</a>
