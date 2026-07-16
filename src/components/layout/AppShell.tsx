@@ -50,9 +50,17 @@ function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className="border-b h-16 flex items-center px-4">
-        <NavLink to="/dashboard" className="flex items-center gap-2.5 font-semibold tracking-tight" aria-label="InsightFlow home">
-          <LogoMark size={32} />
-          {!collapsed && <span className="text-[15px]">InsightFlow</span>}
+        <NavLink
+          to="/dashboard"
+          className="flex items-center gap-2.5 group"
+          aria-label="XogArag home"
+        >
+          <LogoMark size={30} className="transition-transform group-hover:scale-105" />
+          {!collapsed && (
+            <span className="text-[15px] font-semibold tracking-tight leading-none">
+              Xog<span className="text-primary">Arag</span>
+            </span>
+          )}
         </NavLink>
       </SidebarHeader>
       <SidebarContent className="py-2">

@@ -47,7 +47,7 @@ export function ComingSoonPage({
             </div>
             <h2 className="text-2xl font-semibold tracking-tight mb-2">{title} is nearly here</h2>
             <p className="text-muted-foreground mb-6 max-w-lg">
-              We're building this module with the same craft as the rest of InsightFlow.
+              We're building this module with the same craft as the rest of XogArag.
               In the meantime, upload a dataset and explore the tools that are live today.
             </p>
             <ul className="space-y-2.5 mb-8">

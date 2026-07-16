@@ -38,7 +38,7 @@ export default function Profile() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-      <PageHeader title="Profile" description="How you appear in InsightFlow." />
+      <PageHeader title="Profile" description="How you appear in XogArag." />
       <Card className="max-w-2xl">
         <CardContent className="p-6 space-y-6">
           <div className="flex items-center gap-4">
