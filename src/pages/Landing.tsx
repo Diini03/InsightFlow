@@ -17,7 +17,7 @@ const features = [
 ];
 
 const testimonials = [
-  { name: "Sarah Chen", role: "Head of Ops, Northlake", quote: "InsightFlow cut our monthly reporting from 3 days to 20 minutes. It's the tool I wished I had at my last three companies." },
+  { name: "Sarah Chen", role: "Head of Ops, Northlake", quote: "XogArag cut our monthly reporting from 3 days to 20 minutes. It's the tool I wished I had at my last three companies." },
   { name: "Marcus Ortiz", role: "Founder, Statica", quote: "The AI summary alone justifies the price. It reads a dataset and tells me exactly what changed — no more scrolling through pivot tables." },
   { name: "Priya Kumar", role: "Data Lead, Boldform", quote: "Finally a BI tool my non-technical stakeholders can actually use. Adoption went from 15% to 90% in a month." },
 ];
@@ -29,7 +29,7 @@ const pricing = [
 ];
 
 const faqs = [
-  { q: "Do I need to be technical to use InsightFlow?", a: "No. If you can drop a spreadsheet on a page, you can use InsightFlow. Our AI auto-detects column types, flags data quality issues, and writes a plain-English summary of what your data shows." },
+  { q: "Do I need to be technical to use XogArag?", a: "No. If you can drop a spreadsheet on a page, you can use XogArag. Our AI auto-detects column types, flags data quality issues, and writes a plain-English summary of what your data shows." },
   { q: "What file formats are supported?", a: "CSV and Excel (.xlsx, .xls) are supported today. Database connectors and Google Sheets sync are on the roadmap." },
   { q: "Is my data secure?", a: "Yes. Every dataset is stored encrypted at rest with row-level security — only you and users you invite can access your data. We never train models on customer data." },
   { q: "Can I export dashboards?", a: "Yes. Every dashboard exports to PDF, PNG, or an interactive shared link. Pro plans include scheduled email exports." },
@@ -41,7 +41,7 @@ export default function Landing() {
       {/* Nav */}
       <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center" aria-label="InsightFlow home">
+          <Link to="/" className="flex items-center" aria-label="XogArag home">
             <LogoLockup size={30} />
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm">
@@ -255,7 +255,7 @@ export default function Landing() {
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <LogoMark size={22} />
-            <span className="font-semibold text-foreground">InsightFlow</span>
+            <span className="font-semibold text-foreground">XogArag</span>
             <span className="hidden sm:inline">· Business intelligence made simple.</span>
           </div>
           <div className="flex gap-6">
