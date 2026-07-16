@@ -1,73 +1,175 @@
-# Welcome to your Lovable project
+# 📊 XogArag
 
-## Project info
+> See the story behind your data.
 
-**URL**: https://lovable.dev/projects/4846b0c9-54fd-471b-8374-96ba5ce53cb9
+XogArag is a modern Business Intelligence platform that transforms raw business data into interactive dashboards, executive reports, and actionable insights.
 
-## How can I edit this code?
+Designed for analysts, managers, startups, NGOs, and organizations that make data-driven decisions.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🌐 Live Demo
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4846b0c9-54fd-471b-8374-96ba5ce53cb9) and start prompting.
+**Website:** https://YOUR-LINK.vercel.app
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 📸 Preview
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+> Add screenshots
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+# ✨ Features
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Executive dashboards
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- KPI cards
 
-# Step 3: Install the necessary dependencies.
-npm i
+- Revenue analysis
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- Customer analytics
 
-**Edit a file directly in GitHub**
+- Product performance
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Regional insights
 
-**Use GitHub Codespaces**
+- Interactive filters
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Report builder
 
-## What technologies are used for this project?
+- Forecasting
 
-This project is built with:
+- Export reports
 
-- Vite
-- TypeScript
+- Dark Mode
+
+- Responsive Design
+
+---
+
+# 🚀 Tech Stack
+
+Frontend
+
 - React
-- shadcn-ui
+
+- TypeScript
+
 - Tailwind CSS
 
-## How can I deploy this project?
+- shadcn/ui
 
-Simply open [Lovable](https://lovable.dev/projects/4846b0c9-54fd-471b-8374-96ba5ce53cb9) and click on Share -> Publish.
+Backend
 
-## Can I connect a custom domain to my Lovable project?
+- FastAPI
 
-Yes, you can!
+Data
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- Pandas
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- NumPy
+
+Charts
+
+- Recharts
+
+Deployment
+
+- Vercel
+
+---
+
+# 🏗️ Architecture
+
+Upload
+
+↓
+
+Processing
+
+↓
+
+Analytics Engine
+
+↓
+
+Business Insights
+
+↓
+
+Reports
+
+↓
+
+Export
+
+---
+
+# 📂 Project Structure
+
+frontend/
+
+backend/
+
+components/
+
+charts/
+
+services/
+
+hooks/
+
+---
+
+# ⚙️ Installation
+
+```bash
+
+git clone https://github.com/Diini03/xog-arag.git
+
+cd xog-arag
+
+npm install
+
+npm run dev
+
+```
+
+---
+
+# 📈 Roadmap
+
+- AI-generated insights
+
+- Team dashboards
+
+- Scheduled reports
+
+- Email reports
+
+- Forecasting improvements
+
+- Dashboard sharing
+
+---
+
+# 🔒 Security
+
+- Authentication
+
+- Secure uploads
+
+- Input validation
+
+- Protected APIs
+
+---
+
+# 📄 License
+
+MIT
+
+---
+
+Built with ❤️ by Diini Kahiye
