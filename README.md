@@ -1,4 +1,4 @@
-# 📊 XogArag
+# XogArag
 
 > See the story behind your data.
 
@@ -8,56 +8,36 @@ Designed for analysts, managers, startups, NGOs, and organizations that make dat
 
 ---
 
-## 🌐 Live Demo
+## Preview
 
-**Website:** https://YOUR-LINK.vercel.app
-
----
-
-## 📸 Preview
-
-> Add screenshots
+![XogArag Preview](public/preview.png)
 
 ---
 
-# ✨ Features
+# Features
 
 - Executive dashboards
-
 - KPI cards
-
 - Revenue analysis
-
 - Customer analytics
-
 - Product performance
-
 - Regional insights
-
 - Interactive filters
-
 - Report builder
-
 - Forecasting
-
 - Export reports
-
 - Dark Mode
-
 - Responsive Design
 
 ---
 
-# 🚀 Tech Stack
+# Tech Stack
 
 Frontend
 
 - React
-
 - TypeScript
-
 - Tailwind CSS
-
 - shadcn/ui
 
 Backend
@@ -67,7 +47,6 @@ Backend
 Data
 
 - Pandas
-
 - NumPy
 
 Charts
@@ -80,7 +59,7 @@ Deployment
 
 ---
 
-# 🏗️ Architecture
+# Architecture
 
 Upload
 
@@ -106,7 +85,7 @@ Export
 
 ---
 
-# 📂 Project Structure
+# Project Structure
 
 frontend/
 
@@ -122,7 +101,7 @@ hooks/
 
 ---
 
-# ⚙️ Installation
+# Installation
 
 ```bash
 
@@ -138,38 +117,30 @@ npm run dev
 
 ---
 
-# 📈 Roadmap
+# Roadmap
 
 - AI-generated insights
-
 - Team dashboards
-
 - Scheduled reports
-
 - Email reports
-
 - Forecasting improvements
-
 - Dashboard sharing
 
 ---
 
-# 🔒 Security
+# Security
 
 - Authentication
-
 - Secure uploads
-
 - Input validation
-
 - Protected APIs
 
 ---
 
-# 📄 License
+# License
 
 MIT
 
 ---
 
-Built with ❤️ by Diini Kahiye
+Built with care by Diini Kahiye
