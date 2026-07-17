@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
+import { NadiifiBanner } from "@/components/layout/NadiifiBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { parseFile, qualityScore, duplicateCount, type ParsedDataset } from "@/lib/parse-data";
 import { fmtNumber, fmtBytes } from "@/lib/format";
@@ -125,6 +126,11 @@ export default function DatasetNew() {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <PageHeader title="Upload dataset" description="Drop a CSV or Excel file to get an instant profile and AI-generated insights." />
+
+      <div className="mb-5">
+        <NadiifiBanner />
+      </div>
+
 
       {!file ? (
         <Card {...getRootProps()} className={`border-2 border-dashed cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary-soft" : "hover:border-primary/50"}`}>

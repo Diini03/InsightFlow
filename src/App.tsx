@@ -8,7 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 
-import Landing from "@/pages/Landing";
+import { RootRedirect } from "@/components/common/RootRedirect";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
@@ -37,7 +37,7 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<RootRedirect />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
