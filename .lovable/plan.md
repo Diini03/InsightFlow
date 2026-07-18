@@ -1,73 +1,93 @@
-# XogArag → Professional BI Workspace Redesign
+# XogArag → Data Storytelling & Report Builder
 
-This is a large, multi-phase rework. To ship it well I'll break it into focused phases and confirm scope before touching code.
+Complete pivot. XogArag is no longer a BI/analytics dashboard — it's a **report, presentation, and carousel builder** for analysts who already have charts/KPIs from tools like NadiifiData. Think Canva-for-data + Notion-for-reports.
 
-## Scope summary
+This is a large multi-phase rebuild. I'll ship it in reviewable phases rather than all at once, so each phase is stable and testable.
 
-Turn XogArag from an admin-dashboard template into a Linear/Notion-caliber BI **workspace**: users land directly in the app, upload a clean dataset, get auto-suggested KPIs and charts, and build interactive dashboards with a drag-and-drop canvas, filters, insights, and export.
+---
 
-## Phase 1 — Foundation & shell (this iteration)
+## Phase 1 — Foundation shift (this turn)
 
-1. **Remove marketing surfaces**
-   - Delete `Landing.tsx` (and its route). Root `/` redirects to `/workspace` (or `/login` if unauthenticated).
-   - Strip any hero / pricing / FAQ / testimonial / blog remnants from remaining pages.
-2. **New workspace shell** (`WorkspaceShell`)
-   - Top: slim command bar (breadcrumbs, global search `⌘K`, dataset switcher, theme, user).
-   - Left: collapsible navigation rail (Dashboards, Datasets, Insights, Reports, Settings) — icon-first, expandable.
-   - Center: workspace canvas (route outlet).
-   - Right: contextual **Inspector** panel (properties / chart config) — collapsible.
-   - Bottom: thin status bar (dataset name, row count, last updated, sync state).
-   - All side panels resizable (`react-resizable-panels`).
-3. **Design system pass**
-   - Refine tokens in `index.css`: tighter neutral palette, softer surfaces, elevated `--shadow-panel`, denser radii scale.
-   - Typography: keep Inter, tighten scale (12/13/14/16/20/24), tabular numerals for data.
-   - Micro-interactions: 120–180ms transitions, framer-motion for panel/inspector.
-   - Full light + dark parity.
-4. **NadiifiData clean-data banner**
-   - Subtle dismissible banner on the upload screen (not a popup, not an ad).
-   - Title "Use clean data", short recommendation, secondary link button "Clean Data" → `https://nadiifi-data.vercel.app` (opens new tab).
+Reframe the entire app around **projects (reports)** instead of datasets/dashboards.
 
-## Phase 2 — Upload & auto-analysis
+1. **New IA & routing**
+   - `/` → Home (Start experience: recent projects, templates, "New report").
+   - `/editor/:projectId` → the editor (canvas + panels).
+   - `/present/:projectId` → fullscreen presentation mode.
+   - Keep `/login`, `/register` (optional; guest mode is default).
+   - Remove/park BI routes: `/datasets`, `/dashboards`, `/analytics`, `/reports` (old), `/visualizations`. They still exist as files but are unlinked; deleted in phase 2.
+2. **Editor shell** (`EditorShell`)
+   - Top: command bar (project title inline-edit, undo/redo, zoom, preview, present, export, share).
+   - Left: **Project Explorer** — pages/slides list, drag-reorder, add page, duplicate, delete.
+   - Center: **Canvas** — paged (A4 / 16:9 / 1:1 carousel) with rulers, guides, snap grid, zoom.
+   - Right: **Properties panel** — contextual (element or page properties).
+   - Bottom: **Page navigator** — thumbnail strip with add/reorder.
+   - All resizable via `react-resizable-panels`.
+3. **Home / Start experience**
+   - Replace dashboard as landing. Sections:
+     - Create new: template grid (Executive, Business, NGO SitRep, Research, Monthly, Annual, Marketing, Case Study, LinkedIn Carousel, Instagram Carousel, Presentation, Blank).
+     - Recent projects (local + cloud once signed in).
+     - Import: charts image, KPI JSON, CSV, dashboard screenshot.
+4. **Project model + local persistence**
+   - Zustand store: `Project { id, name, type, pages: Page[], theme }`; `Page { id, size, background, elements: Element[] }`; `Element { id, type, x, y, w, h, rotation, z, props }`.
+   - Element types (phase 1): `heading`, `text`, `image`, `shape`, `divider`, `kpi`, `chart-placeholder`.
+   - Persist to `localStorage` under `xogarag.projects`. Cloud sync in phase 4.
+5. **Design system pass**
+   - Refresh tokens for a "creative software" feel (Linear/Figma-inspired): deeper neutrals, softer panels, floating toolbars, 8pt spacing scale, tabular-nums for stats, subtle motion (120–180ms).
+   - Update `index.css` + component variants; no hardcoded colors.
 
-- Redesigned drag-and-drop with live parse preview, column type chips, health summary (rows / cols / missing / duplicates / quality).
-- Auto-analysis engine (client-side over parsed rows) that classifies columns (numeric / categorical / date / boolean / text) and emits **suggestions**: recommended KPIs, recommended charts, recommended filters.
-- "Never start empty" — after upload, user lands on a pre-populated dashboard draft.
+**Deliverable at end of phase 1:** users can open the app, pick a template or blank, land in the editor with a working canvas, add/edit text + KPI + shape/image elements, reorder pages, and see it persist across reloads. Export/present come next phase.
 
-## Phase 3 — KPI cards & chart library
+---
 
-- KPI card component with variants (color, icon, format, size) + customization drawer.
-- Chart primitives (Recharts): bar, line, area, pie, donut, scatter, histogram, stacked bar/area, treemap, radar, bubble, heatmap, table. Map deferred unless geo columns detected.
-- Every chart: legend, tooltip, export (PNG/SVG), enter animation, responsive container.
+## Phase 2 — Editor depth
 
-## Phase 4 — Dashboard builder
+- Rich text editing (Tiptap): bold, italic, underline, lists, links, alignment, headings, highlight, code.
+- Full element library: paragraph, chart (SVG placeholder + upload), table, icon (lucide picker), quote, callout, stats block, key findings block, recommendations block, logo, header/footer, page numbers.
+- Selection: multi-select, group, align, distribute, layer order, lock.
+- Snap-to-grid + smart guides, keyboard nudge, copy/paste, duplicate, undo/redo history.
+- Zoom controls (fit, 50/100/200%, ⌘±).
+- Delete unused old BI pages/components.
 
-- Grid canvas with `react-grid-layout`: move, resize, snap, duplicate, delete, align.
-- Save / rename / duplicate / delete dashboards (Lovable Cloud table).
-- Recently opened list.
+## Phase 3 — Templates & carousel builder
 
-## Phase 5 — Filters, insights, export
+- 10+ real templates per report type (Corporate, Minimal, Modern, Dark, Research, NGO, Startup, Financial, Presentation, Carousel).
+- Carousel builder specialization: 1:1 slide size, cover/numbered pages, large-stat layouts, LinkedIn/Instagram presets.
+- Theme system: colors, fonts, spacing tokens per project, one-click restyle.
 
-- Global filter bar (date, dropdown, search, numeric range, multi-select) wired to all widgets.
-- Auto-insights panel (top/bottom category, trend, largest segment) — concise plain-language observations.
-- Export: dashboard → PNG/PDF (`html-to-image` + `jspdf`), chart → PNG/SVG, filtered data → CSV, config → JSON.
+## Phase 4 — Export, present, auth & cloud
 
-## Phase 6 — i18n, a11y, polish
+- Export: PNG/JPEG per page (`html-to-image`), PDF (`jspdf` + multipage), PPTX (`pptxgenjs`), HTML, Markdown.
+- Presentation mode: fullscreen, keyboard nav, presenter view.
+- Auth (Lovable Cloud): email/password + Google, guest mode default, restore projects on sign-in.
+- Cloud project storage table + RLS.
 
-- `i18next` with **English + Somali**, persisted preference, instant switch, full UI coverage.
-- Keyboard nav, focus rings, ARIA labels, chart alt summaries, contrast audit.
-- Loading / empty / error states for every route. Final QA pass on spacing, alignment, overflow, responsive breakpoints.
+## Phase 5 — Polish
+
+- i18n EN/SO with `i18next`, instant switch, persisted.
+- A11y pass: focus rings, ARIA, keyboard shortcuts panel.
+- Loading / empty / error states across all surfaces.
+- Responsive: desktop-first, tablet full editor, mobile view + light edit.
+- Final visual QA — spacing, alignment, overflow.
+
+---
 
 ## Technical notes
 
-- New deps (Phase 1 only for now): `react-resizable-panels`. Later phases will add `react-grid-layout`, `html-to-image`, `jspdf`, `i18next` + `react-i18next`.
-- Data model stays on existing Lovable Cloud tables (`datasets`, `dataset_rows`, `dashboards`, `charts`, `insights`, `reports`). Dashboard layout JSON stored on `dashboards.config`.
-- No backend schema changes required in Phase 1.
+- New deps phase 1: none required beyond what's installed (`react-resizable-panels`, `zustand` if not present, framer-motion). Phase 2 adds Tiptap. Phase 4 adds `html-to-image`, `jspdf`, `pptxgenjs`.
+- No backend schema changes in phase 1. Phase 4 introduces a `projects` table (id, owner, name, type, data jsonb, updated_at) with RLS.
+- Old BI files remain in-repo during phase 1 (unlinked) to keep the diff reviewable; deleted in phase 2.
+
+---
 
 ## What I'll do next
 
-If you approve, I'll execute **Phase 1 only** in this turn: remove marketing pages, build the new workspace shell (nav rail + inspector + status bar + command bar), refresh design tokens, and add the NadiifiData clean-data banner on the upload page. Phases 2–6 land in follow-up turns so each is reviewable.
+If you approve, I execute **Phase 1 only** this turn:
 
-Two quick confirmations before I start:
+1. New Home page (templates + recent projects).
+2. New `/editor/:id` route with `EditorShell` (project explorer, canvas, properties panel, page navigator, command bar).
+3. Zustand project store with localStorage persistence.
+4. Basic element rendering + editing (heading, text, KPI, shape, image) with drag/resize on canvas.
+5. Route + shell cleanup so the app opens directly into the new experience.
 
-1. OK to **delete the Landing page entirely** and send `/` straight to the workspace (login-gated)?
-2. Keep the existing routes (`/datasets`, `/dashboards`, etc.) but rehome them inside the new `WorkspaceShell`, or collapse to a single `/workspace` route with internal view state? I recommend keeping routes — better URLs, shareable dashboards.
+Phases 2–5 land in follow-up turns. Confirm and I'll build.
