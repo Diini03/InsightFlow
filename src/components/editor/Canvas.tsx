@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PAGE_SIZES, Project, ProjectElement, ProjectPage } from "@/lib/projects/types";
 import { projectStore } from "@/lib/projects/store";
 import { ElementView } from "./elements/ElementView";
@@ -12,9 +12,14 @@ interface CanvasProps {
   zoom: number;
   onFit: (fit: number) => void;
   autoFit: boolean;
+  showGrid: boolean;
+  snap: boolean;
+  pageRef?: (el: HTMLDivElement | null) => void;
 }
 
-export function Canvas({ project, page, selectedId, onSelect, zoom, onFit, autoFit }: CanvasProps) {
+const SNAP = 8;
+
+export function Canvas({ project, page, selectedId, onSelect, zoom, onFit, autoFit, showGrid, snap, pageRef }: CanvasProps) {
   const dims = PAGE_SIZES[page.size];
   const wrapRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(1);
@@ -49,18 +54,20 @@ export function Canvas({ project, page, selectedId, onSelect, zoom, onFit, autoF
       <div className="min-h-full min-w-full flex items-center justify-center p-12">
         <div
           className="relative shadow-elevated rounded-md"
-          style={{
-            width: dims.w * scale,
-            height: dims.h * scale,
-          }}
+          style={{ width: dims.w * scale, height: dims.h * scale }}
         >
           <div
-            className="absolute top-0 left-0 origin-top-left"
+            ref={pageRef}
+            className="absolute top-0 left-0 origin-top-left overflow-hidden"
             style={{
               width: dims.w,
               height: dims.h,
               transform: `scale(${scale})`,
               background: page.background,
+              backgroundImage: showGrid
+                ? `linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.06) 1px, transparent 1px)`
+                : undefined,
+              backgroundSize: showGrid ? `${SNAP * 4}px ${SNAP * 4}px` : undefined,
             }}
             onMouseDown={(e) => {
               if (e.target === e.currentTarget) onSelect(null);
@@ -77,6 +84,7 @@ export function Canvas({ project, page, selectedId, onSelect, zoom, onFit, autoF
                   selected={selectedId === el.id}
                   scale={scale}
                   bounds={dims}
+                  snap={snap}
                   onSelect={() => onSelect(el.id)}
                 />
               ))}
@@ -87,8 +95,12 @@ export function Canvas({ project, page, selectedId, onSelect, zoom, onFit, autoF
   );
 }
 
+function snapVal(v: number, snap: boolean) {
+  return snap ? Math.round(v / SNAP) * SNAP : v;
+}
+
 function ElementFrame({
-  el, page, projectId, selected, scale, bounds, onSelect,
+  el, page, projectId, selected, scale, bounds, snap, onSelect,
 }: {
   el: ProjectElement;
   page: ProjectPage;
@@ -96,6 +108,7 @@ function ElementFrame({
   selected: boolean;
   scale: number;
   bounds: { w: number; h: number };
+  snap: boolean;
   onSelect: () => void;
 }) {
   const [drag, setDrag] = useState<null | { mode: "move" | "resize"; startX: number; startY: number; el: ProjectElement }>(null);
@@ -106,23 +119,27 @@ function ElementFrame({
       const dx = (e.clientX - drag.startX) / scale;
       const dy = (e.clientY - drag.startY) / scale;
       if (drag.mode === "move") {
-        const x = Math.max(0, Math.min(bounds.w - drag.el.w, drag.el.x + dx));
-        const y = Math.max(0, Math.min(bounds.h - drag.el.h, drag.el.y + dy));
-        projectStore.updateElement(projectId, page.id, drag.el.id, { x, y } as any);
+        const x = Math.max(0, Math.min(bounds.w - drag.el.w, snapVal(drag.el.x + dx, snap)));
+        const y = Math.max(0, Math.min(bounds.h - drag.el.h, snapVal(drag.el.y + dy, snap)));
+        projectStore.updateElement(projectId, page.id, drag.el.id, { x, y } as any, { history: false });
       } else {
-        const w = Math.max(20, Math.min(bounds.w - drag.el.x, drag.el.w + dx));
-        const h = Math.max(20, Math.min(bounds.h - drag.el.y, drag.el.h + dy));
-        projectStore.updateElement(projectId, page.id, drag.el.id, { w, h } as any);
+        const w = Math.max(20, Math.min(bounds.w - drag.el.x, snapVal(drag.el.w + dx, snap)));
+        const h = Math.max(20, Math.min(bounds.h - drag.el.y, snapVal(drag.el.h + dy, snap)));
+        projectStore.updateElement(projectId, page.id, drag.el.id, { w, h } as any, { history: false });
       }
     };
-    const onUp = () => setDrag(null);
+    const onUp = () => {
+      // commit history snapshot on release
+      projectStore.updateElement(projectId, page.id, drag.el.id, {} as any);
+      setDrag(null);
+    };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-  }, [drag, scale, bounds, projectId, page.id]);
+  }, [drag, scale, bounds, projectId, page.id, snap]);
 
   return (
     <div
