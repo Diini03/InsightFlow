@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 
 import Home from "@/pages/Home";
 import Editor from "@/pages/Editor";
+import Present from "@/pages/Present";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
