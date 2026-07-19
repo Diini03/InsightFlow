@@ -45,6 +45,19 @@ function PageInspector({ project, page }: { project: Project; page: ProjectPage 
       <Field label="Elements">
         <div className="text-muted-foreground">{page.elements.length}</div>
       </Field>
+
+      <div className="pt-3 mt-3 border-t space-y-3">
+        <div className="text-[10.5px] uppercase tracking-wider text-muted-foreground/70 font-semibold">Project theme</div>
+        <Field label="Primary">
+          <ColorRow value={project.theme.primary} onChange={(v) => projectStore.setTheme(project.id, { primary: v })} />
+        </Field>
+        <Field label="Accent">
+          <ColorRow value={project.theme.accent} onChange={(v) => projectStore.setTheme(project.id, { accent: v })} />
+        </Field>
+        <Field label="Text">
+          <ColorRow value={project.theme.text} onChange={(v) => projectStore.setTheme(project.id, { text: v })} />
+        </Field>
+      </div>
     </>
   );
 }

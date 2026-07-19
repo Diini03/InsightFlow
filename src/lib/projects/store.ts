@@ -9,6 +9,10 @@ type Listener = () => void;
 const listeners = new Set<Listener>();
 let projects: Project[] = load();
 
+// Per-project undo/redo stacks (in-memory).
+const history: Record<string, { past: Project[]; future: Project[] }> = {};
+const HISTORY_LIMIT = 50;
+
 function load(): Project[] {
   if (typeof window === "undefined") return [];
   try {
@@ -44,12 +48,41 @@ export function useProject(id: string | undefined) {
   );
 }
 
-function update(id: string, updater: (p: Project) => Project) {
+function snapshot(id: string) {
+  const cur = projects.find((p) => p.id === id);
+  if (!cur) return;
+  const h = history[id] ?? (history[id] = { past: [], future: [] });
+  h.past.push(JSON.parse(JSON.stringify(cur)));
+  if (h.past.length > HISTORY_LIMIT) h.past.shift();
+  h.future = [];
+}
+
+function update(id: string, updater: (p: Project) => Project, opts: { history?: boolean } = { history: true }) {
+  if (opts.history !== false) snapshot(id);
   projects = projects.map((p) => (p.id === id ? { ...updater(p), updatedAt: Date.now() } : p));
   persist();
 }
 
 export const projectStore = {
+  canUndo(id: string) { return (history[id]?.past.length ?? 0) > 0; },
+  canRedo(id: string) { return (history[id]?.future.length ?? 0) > 0; },
+  undo(id: string) {
+    const h = history[id]; if (!h || !h.past.length) return;
+    const cur = projects.find((p) => p.id === id); if (!cur) return;
+    const prev = h.past.pop()!;
+    h.future.push(JSON.parse(JSON.stringify(cur)));
+    projects = projects.map((p) => (p.id === id ? prev : p));
+    persist();
+  },
+  redo(id: string) {
+    const h = history[id]; if (!h || !h.future.length) return;
+    const cur = projects.find((p) => p.id === id); if (!cur) return;
+    const next = h.future.pop()!;
+    h.past.push(JSON.parse(JSON.stringify(cur)));
+    projects = projects.map((p) => (p.id === id ? next : p));
+    persist();
+  },
+
   createFromTemplate(type: ProjectType) {
     const p = createProjectFromTemplate(type);
     projects = [p, ...projects];
@@ -66,10 +99,14 @@ export const projectStore = {
   },
   remove(id: string) {
     projects = projects.filter((p) => p.id !== id);
+    delete history[id];
     persist();
   },
   rename(id: string, name: string) {
     update(id, (p) => ({ ...p, name }));
+  },
+  setTheme(id: string, theme: Partial<Project["theme"]>) {
+    update(id, (p) => ({ ...p, theme: { ...p.theme, ...theme } }));
   },
   addPage(id: string, size?: ProjectPage["size"]) {
     update(id, (p) => {
@@ -111,17 +148,19 @@ export const projectStore = {
   setPageBackground(id: string, pageId: string, background: string) {
     update(id, (p) => ({ ...p, pages: p.pages.map((pg) => (pg.id === pageId ? { ...pg, background } : pg)) }));
   },
-  addElement(id: string, pageId: string, el: Omit<ProjectElement, "id" | "z"> & { z?: number }) {
+  addElement(id: string, pageId: string, el: Omit<ProjectElement, "id" | "z"> & { z?: number }): string {
+    const newId = uid();
     update(id, (p) => ({
       ...p,
       pages: p.pages.map((pg) => {
         if (pg.id !== pageId) return pg;
         const z = (el.z ?? Math.max(0, ...pg.elements.map((e) => e.z)) + 1);
-        return { ...pg, elements: [...pg.elements, { ...el, id: uid(), z } as ProjectElement] };
+        return { ...pg, elements: [...pg.elements, { ...el, id: newId, z } as ProjectElement] };
       }),
     }));
+    return newId;
   },
-  updateElement(id: string, pageId: string, elementId: string, patch: Partial<ProjectElement>) {
+  updateElement(id: string, pageId: string, elementId: string, patch: Partial<ProjectElement>, opts: { history?: boolean } = {}) {
     update(id, (p) => ({
       ...p,
       pages: p.pages.map((pg) => {
@@ -131,13 +170,30 @@ export const projectStore = {
           elements: pg.elements.map((e) => (e.id === elementId ? ({ ...e, ...patch, props: { ...(e as any).props, ...(patch as any).props } } as ProjectElement) : e)),
         };
       }),
-    }));
+    }), opts);
   },
   removeElement(id: string, pageId: string, elementId: string) {
     update(id, (p) => ({
       ...p,
       pages: p.pages.map((pg) => (pg.id === pageId ? { ...pg, elements: pg.elements.filter((e) => e.id !== elementId) } : pg)),
     }));
+  },
+  duplicateElement(id: string, pageId: string, elementId: string): string | null {
+    const cur = projects.find((p) => p.id === id);
+    const pg = cur?.pages.find((x) => x.id === pageId);
+    const src = pg?.elements.find((e) => e.id === elementId);
+    if (!src) return null;
+    const newId = uid();
+    update(id, (p) => ({
+      ...p,
+      pages: p.pages.map((page) => {
+        if (page.id !== pageId) return page;
+        const z = Math.max(0, ...page.elements.map((e) => e.z)) + 1;
+        const copy = { ...JSON.parse(JSON.stringify(src)), id: newId, x: src.x + 16, y: src.y + 16, z };
+        return { ...page, elements: [...page.elements, copy] };
+      }),
+    }));
+    return newId;
   },
   bringForward(id: string, pageId: string, elementId: string, dir: 1 | -1) {
     update(id, (p) => ({

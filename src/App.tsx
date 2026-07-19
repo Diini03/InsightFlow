@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 
 import Home from "@/pages/Home";
 import Editor from "@/pages/Editor";
+import Present from "@/pages/Present";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/editor/:id" element={<Editor />} />
+              <Route path="/present/:id" element={<Present />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
